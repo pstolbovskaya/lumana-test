@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package report;
+
+option go_package = "github.com/lumana-test/report-service/gen/reportpb;reportpb";
+
+service ReportService {
+  rpc GenerateReport (GenerateReportRequest) returns (GenerateReportResponse);
+}
+
+message DataPoint {
+  int64 timestamp_ms = 1;
+  double value = 2;
+}
+
+message Series {
+  string key = 1;
+  string label = 2;
+  map<string, string> labels = 3;
+  repeated DataPoint points = 4;
+}
+
+message LogSummary {
+  string type = 1;
+  int64 count = 2;
+}
+
+message GenerateReportRequest {
+  string title = 1;
+  int64 from_ms = 2;
+  int64 to_ms = 3;
+  int64 bucket_ms = 4;
+  repeated Series series = 5;
+  repeated LogSummary log_summary = 6;
+}
+
+message GenerateReportResponse {
+  bytes pdf = 1;
+  string filename = 2;
+}

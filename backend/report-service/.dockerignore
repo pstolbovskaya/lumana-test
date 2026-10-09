@@ -1,0 +1,9 @@
+docs/
+*.pdf
+*.png
+README.md
+Makefile
+scripts/
+.git
+.cache/
+bin/
