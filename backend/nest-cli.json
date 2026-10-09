@@ -27,6 +27,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/service-a/tsconfig.app.json"
       }
+    },
+    "service-b": {
+      "type": "application",
+      "root": "apps/service-b",
+      "entryFile": "main",
+      "sourceRoot": "apps/service-b/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/service-b/tsconfig.app.json"
+      }
     }
   }
 }
