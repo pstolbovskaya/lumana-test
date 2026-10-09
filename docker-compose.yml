@@ -1,0 +1,113 @@
+name: lumana
+
+x-node-healthcheck: &node-healthcheck
+  interval: 10s
+  timeout: 5s
+  retries: 5
+  start_period: 20s
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis/redis-stack-server:latest
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  report-service:
+    build:
+      context: ./backend/report-service
+    restart: unless-stopped
+    environment:
+      GRPC_PORT: "50051"
+    expose:
+      - "50051"
+    healthcheck:
+      test: ["CMD", "/grpc_health_probe", "-addr=127.0.0.1:50051", "-connect-timeout=2s", "-rpc-timeout=2s"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  service-a:
+    build:
+      context: ./backend
+      dockerfile: apps/service-a/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: "3001"
+      SERVICE_NAME: service-a
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB: service_a
+      REDIS_URL: redis://redis:6379
+      DATA_DIR: /app/data
+      FETCH_DEFAULT_PAGES: ${FETCH_DEFAULT_PAGES:-3}
+      STEAMSPY_MIN_INTERVAL_MS: ${STEAMSPY_MIN_INTERVAL_MS:-60000}
+      STEAMSPY_BASE_URL: ${STEAMSPY_BASE_URL:-https://steamspy.com/api.php}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-100}
+      LOG_FORMAT: json
+    volumes:
+      - service-a-data:/app/data
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      <<: *node-healthcheck
+
+  service-b:
+    build:
+      context: ./backend
+      dockerfile: apps/service-b/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      PORT: "3002"
+      SERVICE_NAME: service-b
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB: service_b
+      REDIS_URL: redis://redis:6379
+      REPORT_GRPC_URL: report-service:50051
+      REPORT_PROTO_PATH: /app/proto/report.proto
+      REPORT_SOURCE_SERVICE: service-a
+      LOG_FORMAT: json
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      report-service:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3002/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      <<: *node-healthcheck
+
+volumes:
+  mongo-data:
+  redis-data:
+  service-a-data:
