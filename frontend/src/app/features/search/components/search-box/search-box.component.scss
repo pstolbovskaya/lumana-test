@@ -1,0 +1,11 @@
+:host { display: block; }
+.search-field { width: 100%; }
+.suffix-spinner { margin-right: 12px; }
+.suggestion-text { flex: 1 1 auto; white-space: pre; overflow: hidden; text-overflow: ellipsis; }
+.suggestion-icon { color: var(--mat-sys-on-surface-variant); }
+.suggestion-meta {
+  margin-left: 12px;
+  font: var(--mat-sys-label-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+::ng-deep .suggestion .mdc-list-item__primary-text { display: flex; align-items: center; width: 100%; }

@@ -1,0 +1,98 @@
+<header class="header">
+  <div class="titles">
+    <h2 mat-dialog-title class="title" [title]="game.title">{{ game.title }}</h2>
+    <div class="facts">
+      <span class="price">
+        <strong>{{ formatPrice(game.salePrice) }}</strong>
+        @if (game.isOnSale && game.normalPrice > game.salePrice) {
+          <s class="normal">{{ formatPrice(game.normalPrice) }}</s>
+          <span class="sale">−{{ game.savings }}%</span>
+        }
+      </span>
+      @if (game.metacriticScore; as mc) {
+        <span class="chip" [attr.data-tone]="metacriticTone(mc)" title="Metacritic score">
+          <span class="chip-label">Metacritic</span> {{ mc }}
+        </span>
+      }
+      @if (game.steamRatingText) {
+        <span
+          class="chip"
+          [attr.data-tone]="game.steamRatingPercent ? steamRatingTone(game.steamRatingPercent) : null"
+          title="Steam user reviews"
+        >
+          <span class="chip-label">Steam</span> {{ game.steamRatingText }}
+          @if (game.steamRatingPercent) {
+            · {{ game.steamRatingPercent }}%
+          }
+          @if (game.steamRatingCount) {
+            <span class="chip-label">({{ compactCount(game.steamRatingCount) }} reviews)</span>
+          }
+        </span>
+      }
+      @if (game.releaseYear) {
+        <span class="year">{{ game.releaseYear }}</span>
+      }
+      <a mat-button class="deal-link" [href]="dealUrl" target="_blank" rel="noopener noreferrer">
+        <mat-icon>open_in_new</mat-icon> View deal
+      </a>
+    </div>
+  </div>
+  <button mat-icon-button type="button" aria-label="Close" mat-dialog-close>
+    <mat-icon>close</mat-icon>
+  </button>
+</header>
+
+<mat-dialog-content class="content">
+  @if (imageSources.length) {
+    <div class="toolbar" role="toolbar" aria-label="Annotation tools">
+      <mat-button-toggle-group
+        hideSingleSelectionIndicator
+        [value]="mode()"
+        (change)="mode.set($event.value)"
+        aria-label="Editor mode"
+      >
+        <mat-button-toggle value="draw" matTooltip="Draw polygons (D)">
+          <mat-icon>draw</mat-icon><span class="label">Draw</span>
+        </mat-button-toggle>
+        <mat-button-toggle value="select" matTooltip="Select, move & rotate (S)">
+          <mat-icon>pan_tool_alt</mat-icon><span class="label">Select</span>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <mat-divider vertical class="divider" />
+
+      <button mat-icon-button type="button" matTooltip="Rotate left 15°" [disabled]="!hasSelection()" (click)="rotate(-1)">
+        <mat-icon>rotate_left</mat-icon>
+      </button>
+      <button mat-icon-button type="button" matTooltip="Rotate right 15°" [disabled]="!hasSelection()" (click)="rotate(1)">
+        <mat-icon>rotate_right</mat-icon>
+      </button>
+      <button mat-icon-button type="button" matTooltip="Delete selected (Del)" [disabled]="!hasSelection()" (click)="deleteSelected()">
+        <mat-icon>delete</mat-icon>
+      </button>
+
+      <span class="spacer"></span>
+
+      <span class="count">{{ polygons().length }} polygon{{ polygons().length === 1 ? '' : 's' }}</span>
+      <button mat-stroked-button type="button" [disabled]="!polygons().length" (click)="clearAll()">
+        <mat-icon>layers_clear</mat-icon> Clear all
+      </button>
+    </div>
+
+    <app-polygon-editor
+      [sources]="imageSources"
+      [alt]="game.title + ' key art'"
+      [polygons]="polygons()"
+      [mode]="mode()"
+      [(selectedId)]="selectedId"
+      (polygonCreated)="onPolygonCreated($event)"
+      (polygonChanged)="onPolygonChanged($event)"
+      (polygonDeleted)="onPolygonDeleted($event)"
+    />
+  } @else {
+    <div class="no-image">
+      <mat-icon>image_not_supported</mat-icon>
+      <p>This game has no image, so it can't be annotated.</p>
+    </div>
+  }
+</mat-dialog-content>

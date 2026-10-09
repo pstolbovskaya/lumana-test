@@ -1,0 +1,74 @@
+:host { display: flex; flex-direction: column; max-height: inherit; }
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 12px 0 0;
+}
+
+.titles { flex: 1 1 auto; min-width: 0; }
+.title {
+  margin: 0;
+  padding-bottom: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.facts {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  padding: 4px 24px 0;
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+.price { display: inline-flex; align-items: baseline; gap: 6px; color: var(--mat-sys-on-surface); }
+.normal { color: var(--mat-sys-on-surface-variant); }
+.sale {
+  padding: 1px 6px;
+  border-radius: 6px;
+  font: var(--mat-sys-label-medium);
+  background: var(--deal-good-bg);
+  color: var(--deal-good-fg);
+}
+.chip {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font: var(--mat-sys-label-medium);
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+  &[data-tone='good'] { background: var(--deal-good-bg); color: var(--deal-good-fg); }
+  &[data-tone='mixed'] { background: var(--deal-mixed-bg); color: var(--deal-mixed-fg); }
+  &[data-tone='bad'] { background: var(--deal-bad-bg); color: var(--deal-bad-fg); }
+}
+.chip-label { opacity: .75; }
+.year { font: var(--mat-sys-label-large); }
+.deal-link { margin-left: auto; }
+
+.content { display: flex; flex-direction: column; gap: 12px; padding-top: 12px; }
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+.divider { height: 32px; margin: 0 4px; }
+.spacer { flex: 1 1 auto; }
+.count { font: var(--mat-sys-label-large); color: var(--mat-sys-on-surface-variant); }
+.label { margin-left: 6px; }
+
+.no-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 16px;
+  color: var(--mat-sys-on-surface-variant);
+  mat-icon { font-size: 48px; width: 48px; height: 48px; }
+}
+
+@media (max-width: 600px) {
+  .label { display: none; }
+}

@@ -1,0 +1,99 @@
+:host { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; }
+
+.stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 240px;
+  background:
+    repeating-conic-gradient(var(--mat-sys-surface-container) 0 25%, var(--mat-sys-surface-container-high) 0 50%)
+    0 0 / 20px 20px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.frame {
+  position: relative;
+  line-height: 0;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.image {
+  display: block;
+  max-width: 100%;
+  max-height: min(62dvh, 843px);
+  width: auto;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.ready .image { opacity: 1; }
+
+.fallback-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  outline: none;
+}
+
+.overlay-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--mat-sys-on-surface-variant);
+  &.error { color: var(--mat-sys-error); }
+  &.skeleton {
+    background: linear-gradient(
+        100deg,
+        transparent 30%,
+        color-mix(in srgb, var(--mat-sys-on-surface) 6%, transparent) 50%,
+        transparent 70%
+      )
+      0 0 / 200% 100% var(--mat-sys-surface-container);
+    animation: shimmer 1.4s linear infinite;
+  }
+}
+
+@keyframes shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay-state.skeleton { animation: none; }
+}
+
+.hint {
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+  text-align: center;
+  mat-icon { font-size: 16px; width: 16px; height: 16px; flex: 0 0 auto; }
+}

@@ -1,0 +1,51 @@
+<div class="stage" [class.ready]="imageState() === 'loaded'">
+  <div class="frame">
+    <img
+      #image
+      class="image"
+      [attr.src]="src()"
+      [alt]="alt()"
+      draggable="false"
+      (load)="onImageLoad()"
+      (error)="onImageError()"
+    />
+    <canvas
+      #canvas
+      class="overlay"
+      tabindex="0"
+      aria-label="Polygon annotation canvas"
+      [style.cursor]="cursor()"
+      (pointerdown)="onPointerDown($event)"
+      (pointermove)="onPointerMove($event)"
+      (pointerup)="onPointerUp($event)"
+      (pointercancel)="onPointerUp($event)"
+      (pointerleave)="onPointerLeave()"
+      (dblclick)="onDoubleClick($event)"
+      (wheel)="onWheel($event)"
+      (contextmenu)="$event.preventDefault()"
+    ></canvas>
+  </div>
+
+  @switch (imageState()) {
+    @case ('loading') {
+      <div class="overlay-state skeleton" aria-label="Loading image">
+        <mat-spinner diameter="36" />
+      </div>
+    }
+    @case ('error') {
+      <div class="overlay-state error">
+        <mat-icon>broken_image</mat-icon>
+        <span>The image could not be loaded.</span>
+      </div>
+    }
+  }
+</div>
+@if (usingFallback()) {
+  <p class="fallback-note" role="status">
+    <mat-icon aria-hidden="true">info</mat-icon>
+    No large artwork is available for this game — showing its store capsule instead.
+  </p>
+}
+<p class="hint" aria-live="polite">
+  <mat-icon aria-hidden="true">info</mat-icon>{{ hint() }}
+</p>

@@ -1,0 +1,43 @@
+<mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+  <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+  <mat-label>Search games by title…</mat-label>
+  <input
+    matInput
+    type="search"
+    autocomplete="off"
+    spellcheck="false"
+    [formControl]="control"
+    [matAutocomplete]="auto"
+    aria-label="Search games"
+  />
+  @if (searching()) {
+    <mat-spinner matSuffix diameter="20" class="suffix-spinner" />
+  } @else if (control.value) {
+    <button matSuffix mat-icon-button type="button" aria-label="Clear search" (click)="clear()">
+      <mat-icon>close</mat-icon>
+    </button>
+  }
+  <mat-autocomplete
+    #auto="matAutocomplete"
+    class="suggestions-panel"
+    [hideSingleSelectionIndicator]="true"
+  >
+    @if (suggestions().length) {
+      <mat-optgroup [label]="control.value.trim() ? 'From your searches' : 'Recent searches'">
+        @for (s of suggestions(); track s.query) {
+          <mat-option [value]="s.query" class="suggestion">
+            <mat-icon class="suggestion-icon" aria-hidden="true">history</mat-icon>
+            <span class="suggestion-text">
+              @for (seg of s.segments; track $index) {
+                <span [class.suggestion-match]="seg.match">{{ seg.text }}</span>
+              }
+            </span>
+            <span class="suggestion-meta" [title]="s.hits + ' searches · ~' + s.resultCount + ' deals'">
+              ×{{ s.hits }}
+            </span>
+          </mat-option>
+        }
+      </mat-optgroup>
+    }
+  </mat-autocomplete>
+</mat-form-field>

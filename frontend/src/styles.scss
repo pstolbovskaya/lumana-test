@@ -1,0 +1,44 @@
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light dark;
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$orange-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
+html, body { height: 100%; }
+
+:root {
+  --deal-good-bg: #d7f5dd; --deal-good-fg: #0f5a23;
+  --deal-mixed-bg: #fdf0c4; --deal-mixed-fg: #6b4e00;
+  --deal-bad-bg: #fde0dc; --deal-bad-fg: #8c1d18;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --deal-good-bg: #1d4a2a; --deal-good-fg: #b6f0c3;
+    --deal-mixed-bg: #4a3c0e; --deal-mixed-fg: #f8e3a0;
+    --deal-bad-bg: #5a1f1a; --deal-bad-fg: #ffd2cc;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+.suggestion-match {
+  font-weight: 700;
+  color: var(--mat-sys-primary);
+}
+
+.game-dialog-panel .mat-mdc-dialog-surface {
+  border-radius: 16px;
+}

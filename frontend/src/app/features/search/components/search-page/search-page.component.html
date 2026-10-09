@@ -1,0 +1,77 @@
+<section class="search-header">
+  <app-search-box />
+  @if (status() === 'success' && gameCount()) {
+    <p class="summary" aria-live="polite">
+      <strong>{{ gameCount().toLocaleString() }}</strong> game{{ gameCount() === 1 ? '' : 's' }}
+      for “{{ query() }}”
+      <span class="hint">
+        · {{ dealCount().toLocaleString() }} deal{{ dealCount() === 1 ? '' : 's' }}
+        @if (hasMore()) {
+          · page {{ loadedPage() }} of {{ totalPages() }}, scroll for more
+        }
+      </span>
+    </p>
+  }
+</section>
+
+<section class="results">
+  @switch (status()) {
+    @case ('idle') {
+      <div class="state">
+        <mat-icon class="state-icon" aria-hidden="true">travel_explore</mat-icon>
+        <h2>Find your next game</h2>
+        <p>Start typing a game title — deals appear as you type. Click a game to annotate its key art with polygons.</p>
+        @if (recent().length) {
+          <div class="recent">
+            <div class="recent-header">
+              <span>Recent searches</span>
+              <button mat-button type="button" (click)="clearHistory()">
+                <mat-icon>delete_sweep</mat-icon> Clear history
+              </button>
+            </div>
+            <mat-chip-set aria-label="Recent searches">
+              @for (r of recent(); track r.query) {
+                <mat-chip (click)="useRecent(r.query)" [title]="r.hits + ' searches'">{{ r.query }}</mat-chip>
+              }
+            </mat-chip-set>
+          </div>
+        }
+      </div>
+    }
+    @case ('loading') {
+      <div class="state">
+        <mat-spinner diameter="40" />
+        <p>Searching deals for “{{ query() }}”…</p>
+      </div>
+    }
+    @case ('error') {
+      <div class="state error" role="alert">
+        <mat-icon class="state-icon" aria-hidden="true">cloud_off</mat-icon>
+        <h2>Something went wrong</h2>
+        <p>{{ error() }}</p>
+        <button mat-flat-button type="button" (click)="retry()"><mat-icon>refresh</mat-icon> Try again</button>
+      </div>
+    }
+    @case ('success') {
+      @if (gameCount()) {
+        <app-results-list class="list" [annotationCounts]="annotationCounts()" (selectGame)="open($event)" />
+        <div class="list-footer">
+          @if (pageLoading()) {
+            <mat-progress-bar mode="indeterminate" aria-label="Loading more results" />
+          } @else if (pageError()) {
+            <div class="page-error" role="alert">
+              <span>{{ pageError() }}</span>
+              <button mat-button type="button" (click)="retryPage()">Retry</button>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="state">
+          <mat-icon class="state-icon" aria-hidden="true">search_off</mat-icon>
+          <h2>No games found</h2>
+          <p>Nothing matches “{{ query() }}”. Try a shorter or different title.</p>
+        </div>
+      }
+    }
+  }
+</section>

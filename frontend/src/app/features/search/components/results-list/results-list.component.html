@@ -1,0 +1,47 @@
+<cdk-virtual-scroll-viewport class="viewport" [itemSize]="rowHeight" minBufferPx="480" maxBufferPx="960">
+  <div
+    *cdkVirtualFor="let game of dataSource; trackBy: trackById; templateCacheSize: 40"
+    class="row"
+    role="button"
+    tabindex="0"
+    [attr.aria-label]="'Open ' + game.title"
+    (click)="selectGame.emit(game)"
+    (keydown.enter)="selectGame.emit(game)"
+  >
+    <div class="thumb">
+      <mat-icon class="thumb-placeholder" aria-hidden="true">sports_esports</mat-icon>
+      <img [appImgFallback]="thumbs(game)" [alt]="game.title" loading="lazy" decoding="async" />
+    </div>
+    <div class="meta">
+      <div class="title" [title]="game.title">{{ game.title }}</div>
+      <div class="price-line">
+        <span class="price">{{ formatPrice(game.salePrice) }}</span>
+        @if (game.isOnSale && game.normalPrice > game.salePrice) {
+          <s class="normal">{{ formatPrice(game.normalPrice) }}</s>
+          <span class="sale">−{{ game.savings }}%</span>
+        }
+      </div>
+      <div class="facts">
+        @if (game.metacriticScore; as mc) {
+          <span class="mc" [attr.data-tone]="metacriticTone(mc)" title="Metacritic score">{{ mc }}</span>
+        }
+        @if (game.steamRatingText) {
+          <span
+            class="rating"
+            [attr.data-tone]="game.steamRatingPercent ? steamRatingTone(game.steamRatingPercent) : null"
+            [title]="'Steam reviews' + (game.steamRatingPercent ? ': ' + game.steamRatingPercent + '% positive' : '')"
+          >{{ game.steamRatingText }}</span>
+        }
+        @if (game.releaseYear) {
+          <span class="year">{{ game.releaseYear }}</span>
+        }
+      </div>
+    </div>
+    @if (annotationCounts()[game.id]; as count) {
+      <span class="badge" [title]="count + ' polygon(s)'">
+        <mat-icon aria-hidden="true">pentagon</mat-icon>{{ count }}
+      </span>
+    }
+    <mat-icon class="chevron" aria-hidden="true">chevron_right</mat-icon>
+  </div>
+</cdk-virtual-scroll-viewport>
